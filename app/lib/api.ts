@@ -6,7 +6,7 @@
  * The server only sees ciphertext and encrypted keys.
  */
 
-const API_BASE_URL = "https://whisperbox.koyeb.app";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://whisperbox.koyeb.app";
 
 // Type definitions for API responses
 export interface RegisterResponse {
@@ -404,10 +404,8 @@ export function createWebSocketConnection(
   token: string
 ): WebSocket | null {
   try {
-    // WhisperBox expects the token in the query parameter specifically named 'token'
-    // Note: We use the raw token here as JWTs are generally URL-safe, 
-    // but we can add encoding back if the backend requires it.
-    const wsUrl = `wss://whisperbox.koyeb.app/ws?token=${encodeURIComponent(token)}`;
+    const wsBase = API_BASE_URL.replace(/^http/, 'ws');
+    const wsUrl = `${wsBase}/ws?token=${encodeURIComponent(token)}`;
     const ws = new WebSocket(wsUrl);
 
     ws.onopen = () => {};
